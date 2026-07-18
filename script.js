@@ -82,28 +82,33 @@ document.addEventListener("DOMContentLoaded", () => {
   tl.from(shapes, {
     scale: 0,
     duration: 0.55,
-    stagger: 0.12,
+    stagger: 0.1,
     ease: "back.out(1.4)",
   }, 0)
 
   // ---- Idle shape bobbing (after mount) ----
-  const idleParams = [
-    { y: -12, dur: 3.2 },
-    { y: 8, dur: 4.0 },
-    { y: -15, dur: 3.6 },
-    { y: 10, dur: 2.8 },
-  ]
+  // Map index to independent idle parameters. Shape 6 (index 5) is static.
+  const idleParams = {
+    0: { y: 12, dur: 4.5 },
+    1: { y: -10, dur: 3.5 },
+    2: { y: 8, dur: 2.8 },
+    3: { y: -14, dur: 4.2 },
+    4: { y: 10, dur: 3.8 },
+    6: { y: -6, dur: 5.0 }
+  }
 
   gsap.delayedCall(tl.duration() + 0.15, () => {
-    idleParams.forEach((p, i) => {
-      if (!shapes[i]) return
-      gsap.to(shapes[i], {
+    Object.keys(idleParams).forEach(indexKey => {
+      const idx = parseInt(indexKey, 10)
+      if (!shapes[idx]) return
+      const p = idleParams[idx]
+      gsap.to(shapes[idx], {
         y: p.y,
         duration: p.dur,
         ease: "sine.inOut",
         yoyo: true,
         repeat: -1,
-        delay: Math.random() * 2,
+        delay: Math.random() * 1.5,
       })
     })
   })
