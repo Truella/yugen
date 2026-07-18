@@ -20,7 +20,13 @@ body {
   --btn-bg: #454b1b;
   --btn-text: #d7dca3;
   --input-border: #454b1b;
-  --shape-color: #454b1b;
+  /* Per-ring color variables — 6 rings, swapped on hover via GSAP */
+  --ring1-fill: #c3ca85; --ring1-opacity: 0.2;
+  --ring2-fill: #b6bd7a; --ring2-opacity: 0.4;
+  --ring3-fill: #9aa363; --ring3-opacity: 0.52;
+  --ring4-fill: #7d8447; --ring4-opacity: 0.72;
+  --ring5-fill: #5f652f; --ring5-opacity: 0.88;
+  --ring6-fill: #454b1b; --ring6-opacity: 1;
 }
 
 .hero-container {
@@ -42,65 +48,51 @@ body {
   pointer-events: none;
 }
 
-.shapes {
+/* ---- Blob stack (one SVG per ring, absolutely centred) ---- */
+.blob-wrapper {
   position: absolute;
-  inset: 0;
-  z-index: 2;
+  top: 50%;
+  right: -8vw;
+  transform: translateY(-50%);
+  width: min(60vw, 820px);
+  height: auto;
+  z-index: 0;
   pointer-events: none;
-  overflow: hidden;
 }
 
-.shape {
+.blob-stack {
+  position: relative;
+  width: 100%;
+  /* height matches viewBox aspect ratio 412:399 ≈ 0.969 */
+  padding-bottom: 96.8%;
+}
+
+.blob-ring {
   position: absolute;
-  will-change: transform, background-color;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  overflow: visible;
+  will-change: width, height, opacity;
 }
 
-.shape-1 {
-  width: 320px;
-  height: 320px;
-  border-radius: 50%;
-  background: #454b1b;
-  opacity: 0.15;
-  filter: blur(20px);
-  top: 22%;
-  right: 17%;
-}
+/* Outermost = largest. 6 rings, wider gaps for more visible depth. */
+.ring-1 { width: 100%;  height: 100%;  }
+.ring-2 { width: 78%;   height: 78%;   }
+.ring-3 { width: 57%;   height: 57%;   }
+.ring-4 { width: 38%;   height: 38%;   }
+.ring-5 { width: 22%;   height: 22%;   }
+.ring-6 { width: 10%;   height: 10%;   }
 
-.shape-2 {
-  width: 180px;
-  height: 180px;
-  border-radius: 50%;
-  background: var(--shape-color);
-  opacity: 0.35;
-  top: 48%;
-  right: 12%;
-  box-shadow: 20px 25px 50px rgba(69, 75, 27, 0.15);
-}
+/* Path fill + opacity driven by CSS vars for hover-swap */
+.ring-1 path { fill: var(--ring1-fill); opacity: var(--ring1-opacity); }
+.ring-2 path { fill: var(--ring2-fill); opacity: var(--ring2-opacity); }
+.ring-3 path { fill: var(--ring3-fill); opacity: var(--ring3-opacity); }
+.ring-4 path { fill: var(--ring4-fill); opacity: var(--ring4-opacity); }
+.ring-5 path { fill: var(--ring5-fill); opacity: var(--ring5-opacity); }
+.ring-6 path { fill: var(--ring6-fill); opacity: var(--ring6-opacity); }
 
-.shape-3 {
-  width: 220px;
-  height: 60px;
-  border-radius: 999px;
-  background: var(--shape-color);
-  opacity: 0.25;
-  top: 28%;
-  right: 20%;
-  transform: rotate(-30deg);
-  transform-origin: center;
-  box-shadow: 20px 25px 50px rgba(69, 75, 27, 0.15);
-}
-
-.shape-4 {
-  width: 70px;
-  height: 70px;
-  border-radius: 50%;
-  background: var(--shape-color);
-  opacity: 0.50;
-  top: 62%;
-  right: 20%;
-  box-shadow: 10px 12px 25px rgba(69, 75, 27, 0.15);
-}
-
+/* ---- Content ---- */
 .content {
   position: relative;
   z-index: 3;
@@ -136,14 +128,15 @@ body {
   color: var(--text-color);
   opacity: 0.7;
   max-width: 32rem;
-  line-height: 1.5;
+  line-height: 1.6;
+  letter-spacing: 0.01em;
   will-change: color, transform, opacity;
 }
 
 .waitlist-form {
   display: flex;
   flex-direction: row;
-  gap: 1rem;
+  gap: 16px;
   width: 100%;
   max-width: 32rem;
 }
@@ -151,8 +144,8 @@ body {
 .waitlist-form input {
   flex: 1;
   max-width: 22rem;
-  padding: 1.05rem 1.75rem;
-  border: 2px solid var(--input-border);
+  padding: 18px 28px;
+  border: 1px solid var(--input-border);
   border-radius: 999px;
   background: transparent;
   font-size: 1.15rem;
@@ -173,7 +166,7 @@ body {
 }
 
 .waitlist-form button {
-  padding: 1.05rem 2.25rem;
+  padding: 18px 36px;
   border: none;
   border-radius: 999px;
   background: var(--btn-bg);
@@ -187,6 +180,7 @@ body {
 }
 
 .microtext {
+  margin-top: 24px;
   font-size: 0.875rem;
   color: var(--text-color);
   opacity: 0.6;
@@ -198,7 +192,7 @@ body {
 }
 
 @media (max-width: 768px) {
-  .shapes {
+  .blob-wrapper {
     display: none;
   }
 

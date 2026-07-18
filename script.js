@@ -8,7 +8,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const submitBtn = form.querySelector('button[type="submit"]')
   const microtext = document.querySelector(".microtext")
   const countEl = document.querySelector(".count")
-  const shapes = document.querySelectorAll(".shape")
+  const rings = document.querySelectorAll(".blob-ring")
 
   // ---- Split headline into word spans ----
   headline.textContent = "Something quiet is coming"
@@ -30,43 +30,24 @@ document.addEventListener("DOMContentLoaded", () => {
   wordEls.forEach((el, i) => {
     const from = wordEntrances[i] || { y: -80, rotate: -8 }
     tl.from(el, {
-      x: 0,
-      y: 0,
-      opacity: 0,
+      x: 0, y: 0, opacity: 0,
       ...from,
       duration: 0.4,
       ease: "back.out(1.7)",
     }, i * 0.1)
   })
 
-  // Subtext — after headline lands
-  tl.from(subtext, {
-    y: 15,
-    opacity: 0,
-    duration: 0.35,
-  }, ">0.05")
+  // Subtext
+  tl.from(subtext, { y: 15, opacity: 0, duration: 0.35 }, ">0.05")
 
-  // Input — slides from left
-  tl.from(emailInput, {
-    x: -60,
-    opacity: 0,
-    duration: 0.35,
-  }, ">0.05")
+  // Input
+  tl.from(emailInput, { x: -60, opacity: 0, duration: 0.35 }, ">0.05")
 
-  // Button — scale bounce
-  tl.from(submitBtn, {
-    scale: 0,
-    opacity: 0,
-    duration: 0.3,
-    ease: "back.out(2)",
-  }, ">0.05")
+  // Button
+  tl.from(submitBtn, { scale: 0, opacity: 0, duration: 0.3, ease: "back.out(2)" }, ">0.05")
 
-  // Microtext — simple fade up
-  tl.from(microtext, {
-    y: 12,
-    opacity: 0,
-    duration: 0.3,
-  }, ">0.05")
+  // Microtext
+  tl.from(microtext, { y: 12, opacity: 0, duration: 0.3 }, ">0.05")
 
   // Count-up
   const target = parseInt(countEl.dataset.target, 10) || 212
@@ -78,39 +59,25 @@ document.addEventListener("DOMContentLoaded", () => {
     onUpdate: () => { countEl.textContent = Math.round(countObj.val) },
   }, ">0")
 
-  // Shapes — scale up staggered across the sequence
-  tl.from(shapes, {
-    scale: 0,
-    duration: 0.55,
-    stagger: 0.1,
-    ease: "back.out(1.4)",
+  // Rings — fade in staggered from innermost outward; no scale to avoid CSS transform conflict
+  tl.from(rings, {
+    opacity: 0,
+    duration: 0.7,
+    stagger: { each: 0.08, from: "end" },
+    ease: "power2.out",
   }, 0)
 
-  // Map index to independent idle parameters for the 4 consolidated shapes.
-  const idleParams = {
-    0: { y: 12, dur: 4.5 },
-    1: { y: -10, dur: 3.5 },
-    2: { y: -14, dur: 4.2 },
-    3: { y: 8, dur: 2.8 }
-  }
-
-  gsap.delayedCall(tl.duration() + 0.15, () => {
-    Object.keys(idleParams).forEach(indexKey => {
-      const idx = parseInt(indexKey, 10)
-      if (!shapes[idx]) return
-      const p = idleParams[idx]
-      gsap.to(shapes[idx], {
-        y: p.y,
-        duration: p.dur,
-        ease: "sine.inOut",
-        yoyo: true,
-        repeat: -1,
-        delay: Math.random() * 1.5,
-      })
-    })
+  // Idle breathing pulse on the whole blob stack
+  gsap.to(".blob-stack", {
+    scale: 1.025,
+    duration: 7,
+    ease: "sine.inOut",
+    yoyo: true,
+    repeat: -1,
+    transformOrigin: "center center",
   })
 
-  // ---- Wipe state ----
+  // ---- Wipe / hover state ----
   let isWiped = false
 
   function applyState(wiped, direction) {
@@ -128,12 +95,32 @@ document.addEventListener("DOMContentLoaded", () => {
     })
 
     const light = wiped
+
+    // UI element colors
     gsap.to(hero, {
-      "--text-color": light ? "#d7dca3" : "#454b1b",
-      "--btn-bg": light ? "#d7dca3" : "#454b1b",
-      "--btn-text": light ? "#454b1b" : "#d7dca3",
-      "--input-border": light ? "#d7dca3" : "#454b1b",
-      "--shape-color": light ? "#d7dca3" : "#454b1b",
+      "--text-color":  light ? "#d7dca3" : "#454b1b",
+      "--btn-bg":      light ? "#d7dca3" : "#454b1b",
+      "--btn-text":    light ? "#454b1b" : "#d7dca3",
+      "--input-border":light ? "#d7dca3" : "#454b1b",
+      duration: 0.7,
+      ease: "power2.inOut",
+      overwrite: "auto",
+    })
+
+    // Per-ring color swap — ring-3 is the pivot (stays same in both states)
+    gsap.to(hero, {
+      "--ring1-fill":    light ? "#525825" : "#c3ca85",
+      "--ring1-opacity": light ? 1         : 0.2,
+      "--ring2-fill":    light ? "#5f652f" : "#b6bd7a",
+      "--ring2-opacity": light ? 0.88      : 0.4,
+      "--ring3-fill":    "#9aa363",
+      "--ring3-opacity": 0.52,
+      "--ring4-fill":    light ? "#c9cf92" : "#7d8447",
+      "--ring4-opacity": light ? 0.4       : 0.72,
+      "--ring5-fill":    light ? "#d7dca3" : "#5f652f",
+      "--ring5-opacity": light ? 0.28      : 0.88,
+      "--ring6-fill":    light ? "#e8ebb8" : "#454b1b",
+      "--ring6-opacity": light ? 0.18      : 1,
       duration: 0.7,
       ease: "power2.inOut",
       overwrite: "auto",
@@ -171,7 +158,7 @@ document.addEventListener("DOMContentLoaded", () => {
     })
   }
 
-  // ---- Button hover/active micro-interaction ----
+  // ---- Button micro-interactions ----
   submitBtn.addEventListener("mouseenter", () => {
     gsap.to(submitBtn, { scale: 1.03, duration: 0.2, ease: "power2.out", overwrite: "auto" })
   })
@@ -188,7 +175,6 @@ document.addEventListener("DOMContentLoaded", () => {
   // ---- Form submit ----
   form.addEventListener("submit", (e) => {
     e.preventDefault()
-    console.log(emailInput.value)
     const originalText = submitBtn.textContent
     submitBtn.textContent = "Sent"
     submitBtn.disabled = true
