@@ -11,7 +11,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const rings = document.querySelectorAll(".blob-ring")
 
   // ---- Split headline into word spans ----
-  headline.textContent = "Something quiet is coming"
+  headline.textContent = "Something big is brewing."
   const words = headline.textContent.split(" ")
   headline.innerHTML = words.map(w => `<span class="word">${w}</span>`).join(" ")
   const wordEls = headline.querySelectorAll(".word")
