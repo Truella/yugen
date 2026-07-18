@@ -86,15 +86,12 @@ document.addEventListener("DOMContentLoaded", () => {
     ease: "back.out(1.4)",
   }, 0)
 
-  // ---- Idle shape bobbing (after mount) ----
-  // Map index to independent idle parameters. Shape 6 (index 5) is static.
+  // Map index to independent idle parameters for the 4 consolidated shapes.
   const idleParams = {
     0: { y: 12, dur: 4.5 },
     1: { y: -10, dur: 3.5 },
-    2: { y: 8, dur: 2.8 },
-    3: { y: -14, dur: 4.2 },
-    4: { y: 10, dur: 3.8 },
-    6: { y: -6, dur: 5.0 }
+    2: { y: -14, dur: 4.2 },
+    3: { y: 8, dur: 2.8 }
   }
 
   gsap.delayedCall(tl.duration() + 0.15, () => {
